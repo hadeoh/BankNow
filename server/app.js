@@ -1,9 +1,11 @@
-import createError, { HttpError } from "http-errors";
-import express, { Request, Response, NextFunction } from "express";
+import "@babel/polyfill";
+import createError from "http-errors";
+import express from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import config from "./config";
 import * as error from "./config/error";
+import routes from "../server/routes/";
 
 const app = express();
 
@@ -24,35 +26,24 @@ app.get("/", (_req, res) =>
 );
 
 // catch 404 and forward to error handler
-app.use(function(_req: Request, _res: Response, next: NextFunction) {
-  next(createError(404));
-});
+// app.use(function(_req, _res, next) {
+//   next(createError(404));
+// });
 
 // mount all routes on root /api/v1 path
-// app.use('/api/v1', routes);
+app.use("/api/v1", routes);
 
 // if error is not an instanceOf APIError, convert it.
-app.use(function() {
-  error.converter;
-});
+app.use(error.converter);
 
 // catch 404 and forward to error handler
-app.use(function() {
-  error.notFound;
-});
+app.use(error.notFound);
 
 // error handler, send stacktrace only during development
-app.use(function() {
-  error.handler;
-});
+app.use(error.handler);
 
-// error handler
-app.use(function(
-  err: HttpError,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) {
+// // error handler
+app.use((err, req, res, _next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};

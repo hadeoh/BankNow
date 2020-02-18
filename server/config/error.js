@@ -5,23 +5,15 @@ import config from "./index";
 import APIError from "../helpers/APIError";
 
 import JoiErrorFormatter from "../helpers/JoiErrorFormatter";
-import { HttpError } from "http-errors";
-import { NextFunction } from "express";
 
 /**
  * Error handler. Send stacktrace only during development
  * @public
  */
-
-export const handler = (
-  err: any,
-  _req: Request,
-  res: any,
-  _next: NextFunction
-) => {
+export const handler = (err, _req, res, _next) => {
   const response = {
     statusCode: err.status,
-    message: err.message || "Something went wrong",
+    message: err.message || httpStatus[err.status],
     errors: err.errors,
     payload: null,
     stack: err.stack
@@ -37,34 +29,24 @@ export const handler = (
  * If error is not an instanceOf APIError, convert it.
  * @public
  */
-export const converter = (
-  err: HttpError,
-  req: Request,
-  res: any,
-  _next: NextFunction
-) => {
-  let convertedError;
+export const converter = (err, req, res, _next) => {
+  let convertedError = err;
   if (isCelebrate(err)) {
     convertedError = new APIError({
       message: "Invalid fields",
       status: httpStatus.BAD_REQUEST, //unprocessible entity
       errors: JoiErrorFormatter(err.joi.details) || {},
-      isPublic: false,
-      stack: null,
-      payload: null
+      payload: {}
     });
   } else if (!(err instanceof APIError)) {
     convertedError = new APIError({
       message: err.message,
       status: err.status,
-      stack: err.stack,
-      errors: err,
-      isPublic: false,
-      payload: null
+      stack: err.stack
     });
   }
 
-  return handler(convertedError, req, res, _next);
+  return handler(convertedError, req, res);
 };
 
 /**
@@ -73,21 +55,9 @@ export const converter = (
  * @param {} req
  * @param {*} res
  */
-export const errorHandler = (
-  err: HttpError,
-  _req: Request,
-  _res: Response,
-  next: NextFunction
-) => {
+export const errorHandler = (err, req, res, next) => {
   if (err) {
-    const tokenError = new APIError({
-      message: "Unauthorized",
-      status: err.status,
-      isPublic: true,
-      stack: null,
-      errors: err,
-      payload: null
-    });
+    const tokenError = new APIError("Unauthorized", err.status, true);
     next(tokenError);
   }
   next();
@@ -97,19 +67,10 @@ export const errorHandler = (
  * Catch 404 and forward to error handler
  * @public
  */
-export const notFound = (
-  err: HttpError,
-  req: Request,
-  res: Response,
-  _next: NextFunction
-) => {
-  const error = new APIError({
+export const notFound = (req, res) => {
+  const err = new APIError({
     message: "Not found",
-    status: httpStatus.NOT_FOUND,
-    isPublic: true,
-    stack: null,
-    errors: err,
-    payload: null
+    status: httpStatus.NOT_FOUND
   });
-  return handler(error, req, res, _next);
+  return handler(err, req, res);
 };
