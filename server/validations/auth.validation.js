@@ -20,6 +20,19 @@ const userValidation = {
         .required(),
       confirmPassword: Joi.string().required()
     }
+  },
+  signIn:{
+    body:{
+      email: Joi.string()
+        .email()
+        .max(200)
+        .required(),
+        password: Joi.string()
+        .min(6)
+        .max(255)
+        .required()
+
+    }
   }
 };
 
