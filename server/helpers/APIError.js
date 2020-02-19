@@ -1,26 +1,10 @@
 import httpStatus from "http-status";
-import { HttpError } from "http-errors";
 
 /**
  * @extends Error
  */
 class ExtendableError extends Error {
-  errors: HttpError;
-  status: number;
-  isPublic?: boolean;
-  constructor({
-    message,
-    errors,
-    status,
-    isPublic,
-    stack
-  }: {
-    message: string;
-    errors: HttpError;
-    status: number;
-    isPublic?: boolean;
-    stack: any;
-  }) {
+  constructor({ message, errors, status, isPublic, stack }) {
     super(message);
     this.name = this.constructor.name;
     this.message = message;
@@ -48,13 +32,6 @@ class APIError extends ExtendableError {
     stack,
     status = httpStatus.INTERNAL_SERVER_ERROR,
     isPublic = false
-  }: {
-    message: string;
-    errors: HttpError;
-    status: number;
-    isPublic: boolean;
-    stack: any;
-    payload: any;
   }) {
     super({
       message,

@@ -21,6 +21,15 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      phoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
+      profileImageUrl: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       userType: {
         type: Sequelize.STRING,
         defaultValue: "client",

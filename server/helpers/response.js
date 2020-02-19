@@ -7,7 +7,7 @@
  * @returns {{}}
  */
 
-const APIresponse = (statusCode: number, message: String, payload: any, errors: string) => {
+const APIresponse = (statusCode, message, payload, errors) => {
   return {
     statusCode,
     message,
