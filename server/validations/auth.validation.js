@@ -21,40 +21,31 @@ const userValidation = {
       confirmPassword: Joi.string().required()
     }
   },
-  signIn:{
-    body:{
+  signIn: {
+    body: {
       email: Joi.string()
         .email()
         .max(200)
         .required(),
-        password: Joi.string()
+      password: Joi.string()
         .min(6)
         .max(255)
         .required()
-
     }
   },
 
   Update: {
     body: {
-      fullName: Joi.string()
-        .max(200)
-        .invalid(''),
-      email: Joi.string()
-        .email()
-        .max(200)
-        .invalid(''),
-        
-      phoneNumber: Joi.string()
-        .max(200)
-        .invalid(''),
-        
-      password: Joi.string()
+      oldPassword: Joi.string().required(),
+      newPassword: Joi.string()
         .min(6)
         .max(255)
-        .invalid(''),
-        
-      confirmPassword: Joi.string().invalid(''),
+        .invalid("")
+        .required(),
+
+      confirmPassword: Joi.string()
+        .invalid("")
+        .required()
     }
   }
 };

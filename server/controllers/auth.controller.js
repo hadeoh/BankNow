@@ -41,31 +41,69 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-export async function updateUsers(req, res, next) {
-  const id = req.params.ID;
-  let errors = {};
+export const changePassword = async (req, res, next) => {
   try {
-    const existingUser = await db.User.findOne({ where: { id: id } });
+    const foundUser = await db.User.findOne({ where: { id: req.token.id } });
+    const hash = foundUser.password;
+    let { oldPassword, newPassword, confirmPassword } = req.body;
 
-    if (!existingUser) {
-      errors["issue"] = "User not found";
+    if ((await comparePassword(oldPassword, hash)) === true) {
+      if (oldPassword == newPassword) {
+        return res
+          .status(httpStatus.UNPROCESSABLE_ENTITY)
+          .json(
+            sendResponse(
+              httpStatus.UNPROCESSABLE_ENTITY,
+              "error",
+              null,
+              "You cannot use the same password as the old one"
+            )
+          );
+      }
+
+      if (newPassword !== confirmPassword) {
+        return res
+          .status(httpStatus.UNPROCESSABLE_ENTITY)
+          .json(
+            sendResponse(
+              httpStatus.UNPROCESSABLE_ENTITY,
+              "error",
+              null,
+              "Passwords do not match"
+            )
+          );
+      }
+
+      newPassword = await hashPassword(newPassword);
+
+      await db.User.update(
+        { password: newPassword },
+        { where: { id: req.token.id } }
+      );
+
+      return res
+        .status(httpStatus.OK)
+        .json(
+          sendResponse(
+            httpStatus.OK,
+            "Password sucessfully changed",
+            null,
+            null
+          )
+        );
     }
 
-    const newData = { ...existingUser, ...req.body };
-    // let { email, fullName, phoneNumber, password } = newData;
-    let updatedData = await db.User.update(
-      req.body,
-      { returning: true, where: { id: id } }
-    );
-    console.log(updatedData);
-    
-
     return res
-      .status(httpStatus.CREATED)
+      .status(httpStatus.UNAUTHORIZED)
       .json(
-        sendResponse(httpStatus.OK, "updated successfully", updatedData, errors)
+        sendResponse(
+          httpStatus.UNAUTHORIZED,
+          "error",
+          null,
+          "Check your password and try again"
+        )
       );
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
