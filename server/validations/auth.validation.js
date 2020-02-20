@@ -21,17 +21,31 @@ const userValidation = {
       confirmPassword: Joi.string().required()
     }
   },
-  signIn:{
-    body:{
+  signIn: {
+    body: {
       email: Joi.string()
         .email()
         .max(200)
         .required(),
-        password: Joi.string()
+      password: Joi.string()
         .min(6)
         .max(255)
         .required()
+    }
+  },
 
+  Update: {
+    body: {
+      oldPassword: Joi.string().required(),
+      newPassword: Joi.string()
+        .min(6)
+        .max(255)
+        .invalid("")
+        .required(),
+
+      confirmPassword: Joi.string()
+        .invalid("")
+        .required()
     }
   }
 };

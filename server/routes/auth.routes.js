@@ -4,6 +4,7 @@ import paramsValidation from "../validations/auth.validation";
 import userValidation from "../middleware/signup.middleware";
 import userValidationLogin from "../middleware/signin.middleware";
 import * as authController from "../controllers/auth.controller";
+import { auth } from "../policies/auth.policy";
 
 const router = Router();
 
@@ -15,7 +16,7 @@ router
     authController.createUser
   );
 
-  router
+router
   .route("/signin")
   .post(
     validate(paramsValidation.signIn, { abortEarly: false }),
@@ -23,4 +24,11 @@ router
     authController.loginUser
   );
 
+router
+  .route("/changePassword")
+  .patch(
+    auth,
+    validate(paramsValidation.Update, { abortEarly: false }),
+    authController.changePassword
+  );
 export default router;
