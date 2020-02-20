@@ -15,7 +15,7 @@ router
     authController.createUser
   );
 
-  router
+router
   .route("/signin")
   .post(
     validate(paramsValidation.signIn, { abortEarly: false }),
@@ -23,4 +23,8 @@ router
     authController.loginUser
   );
 
+router.route("/user/:ID").patch(
+  validate(paramsValidation.Update, { abortEarly: false }),
+  authController.updateUsers
+);
 export default router;

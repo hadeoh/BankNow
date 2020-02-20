@@ -32,7 +32,7 @@ export const loginUser = async (req, res, next) => {
 
     const payLoad = { id: userExist.id, email: email }; // when loggin in a user
     const token = tokenizer.issue(payLoad);
-    user = { user, token };
+    user = { userExist, token };
     return res
       .status(httpStatus.CREATED)
       .json(sendResponse(httpStatus.OK, "success", user, null));
@@ -40,3 +40,32 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export async function updateUsers(req, res, next) {
+  const id = req.params.ID;
+  let errors = {};
+  try {
+    const existingUser = await db.User.findOne({ where: { id: id } });
+
+    if (!existingUser) {
+      errors["issue"] = "User not found";
+    }
+
+    const newData = { ...existingUser, ...req.body };
+    // let { email, fullName, phoneNumber, password } = newData;
+    let updatedData = await db.User.update(
+      req.body,
+      { returning: true, where: { id: id } }
+    );
+    console.log(updatedData);
+    
+
+    return res
+      .status(httpStatus.CREATED)
+      .json(
+        sendResponse(httpStatus.OK, "updated successfully", updatedData, errors)
+      );
+  } catch (error) {
+    next(error)
+  }
+}

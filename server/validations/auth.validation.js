@@ -33,6 +33,29 @@ const userValidation = {
         .required()
 
     }
+  },
+
+  Update: {
+    body: {
+      fullName: Joi.string()
+        .max(200)
+        .invalid(''),
+      email: Joi.string()
+        .email()
+        .max(200)
+        .invalid(''),
+        
+      phoneNumber: Joi.string()
+        .max(200)
+        .invalid(''),
+        
+      password: Joi.string()
+        .min(6)
+        .max(255)
+        .invalid(''),
+        
+      confirmPassword: Joi.string().invalid(''),
+    }
   }
 };
 
