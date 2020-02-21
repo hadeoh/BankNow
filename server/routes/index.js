@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authRoutes from "../routes/auth.routes";
+import emailRoutes from "../routes/email.routes";
 
 const router = Router();
 
@@ -9,5 +10,6 @@ router.get("/health-check", (_req, res) =>
 );
 
 router.use("/auth", authRoutes);
+router.use("/reset", emailRoutes);
 
 export default router;
