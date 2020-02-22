@@ -3,16 +3,22 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_LOGIN,
     pass: process.env.EMAIL_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
 export const getPasswordResetURL = (user, token) =>
   `http://localhost:3000/password/reset/${user.id}/${token}`;
 
+// function that handles html template
 export const resetPasswordTemplate = (user, url) => {
   const from = process.env.EMAIL_LOGIN;
   const to = user.email;
